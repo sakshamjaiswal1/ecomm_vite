@@ -1,3 +1,9 @@
+import { useSelector, useDispatch } from "react-redux";
+import { IRootState } from "@/store";
+import {
+  addToComparison,
+  removeFromComparison,
+} from "@/redux/products/reducer";
 import { IProduct } from "@/redux/products/interface";
 
 interface ProductCardProps {
@@ -73,8 +79,24 @@ function StarRating({
 }
 
 function ProductCard({ product }: ProductCardProps) {
+  const dispatch = useDispatch();
+  const { comparison } = useSelector(
+    (state: IRootState) => state.products.data
+  );
+
+  const isInComparison = comparison.products.some((p) => p.id === product.id);
+  const isComparisonFull = comparison.products.length >= 3;
+
+  const handleCompareToggle = () => {
+    if (isInComparison) {
+      dispatch(removeFromComparison(product.id));
+    } else {
+      dispatch(addToComparison(product));
+    }
+  };
+
   return (
-    <div className="bg-white rounded-lg overflow-hidden hover:shadow-xl transitionMedium cursor-pointer group border border-gray-200">
+    <div className="bg-white rounded-lg overflow-hidden hover:shadow-xl transitionMedium cursor-pointer group border border-gray-200 relative">
       {/* Product Image with Discount Badge */}
       <div className="relative aspect-[3/4] bg-gray-100 overflow-hidden">
         <img
@@ -94,6 +116,43 @@ function ProductCard({ product }: ProductCardProps) {
             </span>
           </div>
         )}
+
+        {/* Compare Button */}
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            handleCompareToggle();
+          }}
+          disabled={!isInComparison && isComparisonFull}
+          className={`absolute top-2 right-2 lg:top-3 lg:right-3 p-2 rounded-full transition-all duration-200 ${
+            isInComparison
+              ? "bg-blue-500 text-white"
+              : isComparisonFull
+              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+              : "bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-600"
+          }`}
+          title={
+            isInComparison
+              ? "Remove from comparison"
+              : isComparisonFull
+              ? "Comparison full (max 3 products)"
+              : "Add to comparison"
+          }
+        >
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+            />
+          </svg>
+        </button>
       </div>
 
       {/* Product Details */}
