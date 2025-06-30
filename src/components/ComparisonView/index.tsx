@@ -5,7 +5,7 @@ import {
   clearComparison,
   toggleComparisonView,
 } from "@/redux/products/reducer";
-import { IProduct } from "@/redux/products/interface";
+
 
 function ComparisonView() {
   const dispatch = useDispatch();
