@@ -24,12 +24,18 @@ export interface IFilters {
   inStockOnly: boolean;
 }
 
+export interface IComparison {
+  products: IProduct[];
+  isVisible: boolean;
+}
+
 export interface IProductsData {
   products: IProduct[];
   filteredProducts: IProduct[];
   selectedCategory: string;
   appliedFilters: IFilters;
   sortBy: string;
+  comparison: IComparison;
 }
 
 export interface IProductsReducerState {

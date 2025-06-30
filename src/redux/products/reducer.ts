@@ -209,6 +209,10 @@ export const initialState: IProductsReducerState = {
     selectedCategory: "all",
     appliedFilters: defaultFilters,
     sortBy: "recommended",
+    comparison: {
+      products: [],
+      isVisible: false,
+    },
   },
 };
 
@@ -360,6 +364,70 @@ export const productsSlice = createSlice({
         },
       };
     },
+    addToComparison: (state, { payload }: PayloadAction<IProduct>) => {
+      const currentProducts = state.data.comparison.products;
+
+      // Don't add if already in comparison or if already have 3 products
+      if (
+        currentProducts.find((p) => p.id === payload.id) ||
+        currentProducts.length >= 3
+      ) {
+        return state;
+      }
+
+      const newProducts = [...currentProducts, payload];
+
+      return {
+        ...state,
+        data: {
+          ...state.data,
+          comparison: {
+            products: newProducts,
+            isVisible: newProducts.length >= 2,
+          },
+        },
+      };
+    },
+    removeFromComparison: (state, { payload }: PayloadAction<string>) => {
+      const newProducts = state.data.comparison.products.filter(
+        (p) => p.id !== payload
+      );
+
+      return {
+        ...state,
+        data: {
+          ...state.data,
+          comparison: {
+            products: newProducts,
+            isVisible: newProducts.length >= 2,
+          },
+        },
+      };
+    },
+    clearComparison: (state) => {
+      return {
+        ...state,
+        data: {
+          ...state.data,
+          comparison: {
+            products: [],
+            isVisible: false,
+          },
+        },
+      };
+    },
+    toggleComparisonView: (state) => {
+      return {
+        ...state,
+        data: {
+          ...state.data,
+          comparison: {
+            ...state.data.comparison,
+            isVisible: !state.data.comparison.isVisible,
+          },
+        },
+      };
+    },
     productsGetFail: (state, { payload }: PayloadAction<string>) => {
       return {
         ...state,
@@ -384,6 +452,10 @@ export const {
   updateInStockFilter,
   updateSortBy,
   clearAllFilters,
+  addToComparison,
+  removeFromComparison,
+  clearComparison,
+  toggleComparisonView,
   productsGetFail,
   resetProducts,
 } = productsSlice.actions;

@@ -1,11 +1,18 @@
 import { useState } from "react";
+import { useSelector } from "react-redux";
+import { IRootState } from "@/store";
 import Header from "@/components/Header";
 import Breadcrumb from "@/components/Breadcrumb";
 import FilterSidebar from "@/components/FilterSidebar";
 import ProductGrid from "@/components/ProductGrid";
+import ComparisonBar from "@/components/ComparisonBar";
+import ComparisonView from "@/components/ComparisonView";
 
 function Home() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const { comparison } = useSelector(
+    (state: IRootState) => state.products.data
+  );
 
   const breadcrumbItems = [
     { label: "Home", href: "/" },
@@ -19,14 +26,18 @@ function Home() {
       <Header />
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto">
+      <div
+        className={`max-w-7xl mx-auto ${
+          comparison.products.length >= 2 ? "pb-16 sm:pb-20" : ""
+        }`}
+      >
         {/* Breadcrumb - Hidden on mobile */}
         <div className="hidden sm:block px-4 py-4">
           <Breadcrumb items={breadcrumbItems} />
         </div>
 
         {/* Mobile Filter Toggle */}
-        <div className="lg:hidden px-4 py-2 bg-white border-b border-gray-200">
+        <div className="lg:hidden px-6 py-3 bg-white border-b border-gray-200">
           <button
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
             className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-md typo-b3-semiBold text-gray-700"
@@ -95,11 +106,15 @@ function Home() {
           )}
 
           {/* Main Content Area */}
-          <div className="flex-1 p-4 lg:p-6 bg-white lg:ml-4 lg:mr-4">
+          <div className="flex-1 p-6 lg:p-6 bg-white lg:ml-4 lg:mr-4 mx-0 lg:mx-0">
             <ProductGrid />
           </div>
         </div>
       </div>
+
+      {/* Comparison Components */}
+      <ComparisonBar />
+      <ComparisonView />
     </div>
   );
 }
